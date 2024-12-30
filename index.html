@@ -4,139 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Miss NUNSA Voting</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        .contestants-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 32px;
-            margin-bottom: 20px;
-        }
-
-        .contestant-card {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        /* New styles for selected state */
-        .contestant-card.selected {
-            border: 2px solid #00a817;
-            background-color: #d8f2db;
-        }
-
-        .contestant-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .contestant-card img {
-            width: 100%;
-            max-width: 320px;
-            height: 320px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .contestant-info {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        /* Hide the default radio button */
-        .contestant-card input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-        }
-
-        .contestant-name {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .vote-input {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 10px;
-        }
-
-        .vote-count-input {
-            width: 80px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .vote-price {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .vote-button {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 12px 25px;
-            background-color: #00a817;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .vote-button:hover {
-            background-color: #00a816bc;
-        }
-
-        @media (max-width: 768px) {
-            .contestants-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Montserrat&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>Miss NUNSA National 2025 Voting</h1>
+        <h1>Miss NUNSA National 2025</h1>
         
         <div class="contestants-grid">
             <!-- Contestant 1 -->
@@ -302,7 +175,26 @@
                     ]
                 },
                 callback: function(response) {
-                    alert(`Thank you! You have successfully cast ${numberOfVotes} vote(s) for your chosen contestant.`);
+                    // Send vote data to server
+                    fetch('includes/process_vote.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `reference=${response.reference}&contestant_id=${contestantId}&votes=${numberOfVotes}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`Thank you! You have successfully cast ${numberOfVotes} vote(s) for your chosen contestant.`);
+                        } else {
+                            alert('There was an error recording your vote. Please contact support.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while recording your vote');
+                    });
                 },
                 onClose: function() {
                     // Handle payment window close

@@ -131,34 +131,52 @@
     </div>
 
     <script>
+        // Function to fetch and update dashboard data
+        async function updateDashboard() {
+            try {
+                const response = await fetch('includes/get_voting_data.php');
+                const data = await response.json();
+                
+                // Update statistics
+                document.getElementById('totalVotes').textContent = data.totalVotes;
+                document.getElementById('totalAmount').textContent = `₦${data.totalAmount}`;
+                document.getElementById('totalVoters').textContent = data.totalVoters;
 
-    
-        // Sample data - Replace this with real data from your backend
-        const contestantData = [
-            { name: 'Jane Doe', votes: 0, amount: 0 },
-            { name: 'Mary Smith', votes: 0, amount: 0 },
-            { name: 'Sarah Johnson', votes: 0, amount: 0 },
-            { name: 'Alice Brown', votes: 0, amount: 0 }
-        ];
+                // Update chart
+                votingChart.data.labels = data.contestants.map(contestant => contestant.name);
+                votingChart.data.datasets[0].data = data.contestants.map(contestant => contestant.votes);
+                votingChart.update();
 
-        // Calculate totals
-        const totalVotes = contestantData.reduce((sum, contestant) => sum + contestant.votes, 0);
-        const totalAmount = contestantData.reduce((sum, contestant) => sum + contestant.amount, 0);
+                // Update results table
+                const tableBody = document.getElementById('resultsTableBody');
+                tableBody.innerHTML = ''; // Clear existing rows
+                
+                data.contestants.forEach(contestant => {
+                    const percentage = ((contestant.votes / data.totalVotes) * 100).toFixed(1);
+                    const row = `
+                        <tr>
+                            <td>${contestant.name}</td>
+                            <td>${contestant.votes}</td>
+                            <td>${percentage}%</td>
+                            <td>₦${contestant.amount}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        }
 
-        // Update statistics
-        document.getElementById('totalVotes').textContent = totalVotes;
-        document.getElementById('totalAmount').textContent = `₦${totalAmount}`;
-        document.getElementById('totalVoters').textContent = Math.round(totalVotes * 0.8); // Assuming some voters voted multiple times
-
-        // Create chart
+        // Initialize chart
         const ctx = document.getElementById('votingChart').getContext('2d');
-        new Chart(ctx, {
+        const votingChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: contestantData.map(contestant => contestant.name),
+                labels: [],
                 datasets: [{
                     label: 'Number of Votes',
-                    data: contestantData.map(contestant => contestant.votes),
+                    data: [],
                     backgroundColor: '#00a81780',
                     borderColor: '#00a817',
                     borderWidth: 1
@@ -174,25 +192,11 @@
             }
         });
 
-        // Populate results table
-        const tableBody = document.getElementById('resultsTableBody');
-        contestantData.forEach(contestant => {
-            const percentage = ((contestant.votes / totalVotes) * 100).toFixed(1);
-            const row = `
-                <tr>
-                    <td>${contestant.name}</td>
-                    <td>${contestant.votes}</td>
-                    <td>${percentage}%</td>
-                    <td>₦${contestant.amount}</td>
-                </tr>
-            `;
-            tableBody.innerHTML += row;
-        });
+        // Initial load
+        updateDashboard();
 
-        // Add auto-refresh functionality (every 5 minutes)
-        setInterval(() => {
-            location.reload();
-        }, 5 * 60 * 1000);
+        // Refresh every 5 minutes
+        setInterval(updateDashboard, 5 * 60 * 1000);
     </script>
 </body>
 </html>
