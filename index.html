@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miss NUNSA Voting</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .contestants-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-bottom: 20px;
+        }
+
+        .contestant-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* New styles for selected state */
+        .contestant-card.selected {
+            border: 2px solid #00a817;
+            background-color: #d8f2db;
+        }
+
+        .contestant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .contestant-card img {
+            width: 100%;
+            max-width: 320px;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .contestant-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Hide the default radio button */
+        .contestant-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .contestant-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .vote-input {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px;
+        }
+
+        .vote-count-input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .vote-price {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .vote-button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 12px 25px;
+            background-color: #00a817;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .vote-button:hover {
+            background-color: #00a816bc;
+        }
+
+        @media (max-width: 768px) {
+            .contestants-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Miss NUNSA National 2025 Voting</h1>
+        
+        <div class="contestants-grid">
+            <!-- Contestant 1 -->
+            <label class="contestant-card" for="contestant1">
+                <img src="model 2.jpg" alt="Jane Doe">
+                <input type="radio" id="contestant1" name="contestant" value="1">
+                <div class="contestant-info">
+                    <span class="contestant-name">Jane Doe</span>
+                    <p>22, University of Ibadan</p>
+                </div>
+                <div class="vote-input">
+                    <label>Votes:</label>
+                    <input type="number" 
+                           id="votes1" 
+                           class="vote-count-input" 
+                           min="1" 
+                           value="1"
+                           disabled
+                           onchange="updateTotal(1)"
+                           onclick="event.stopPropagation()">
+                </div>
+                <p class="vote-price">Total: ₦<span id="total1">50</span></p>
+            </label>
+
+            <!-- Contestant 2 -->
+            <label class="contestant-card" for="contestant2">
+                <img src="model 2.jpg" alt="Mary Smith">
+                <input type="radio" id="contestant2" name="contestant" value="2">
+                <div class="contestant-info">
+                    <span class="contestant-name">Mary Smith</span>
+                    <p>22, University of Ibadan</p>
+                </div>
+                <div class="vote-input">
+                    <label>Votes:</label>
+                    <input type="number" 
+                           id="votes2" 
+                           class="vote-count-input" 
+                           min="1" 
+                           value="1"
+                           disabled
+                           onchange="updateTotal(2)"
+                           onclick="event.stopPropagation()">
+                </div>
+                <p class="vote-price">Total: ₦<span id="total2">50</span></p>
+            </label>
+
+            <!-- Contestant 3 -->
+            <label class="contestant-card" for="contestant3">
+                <img src="model 2.jpg" alt="Sarah Johnson">
+                <input type="radio" id="contestant3" name="contestant" value="3">
+                <div class="contestant-info">
+                    <span class="contestant-name">Sarah Johnson</span>
+                    <p>22, University of Ibadan</p>
+                </div>
+                <div class="vote-input">
+                    <label>Votes:</label>
+                    <input type="number" 
+                           id="votes3" 
+                           class="vote-count-input" 
+                           min="1" 
+                           value="1"
+                           disabled
+                           onchange="updateTotal(3)"
+                           onclick="event.stopPropagation()">
+                </div>
+                <p class="vote-price">Total: ₦<span id="total3">50</span></p>
+            </label>
+
+            <!-- Contestant 4 -->
+            <label class="contestant-card" for="contestant4">
+                <img src="model 2.jpg" alt="Alice Brown">
+                <input type="radio" id="contestant4" name="contestant" value="4">
+                <div class="contestant-info">
+                    <span class="contestant-name">Alice Brown</span>
+                    <p>22, University of Ibadan</p>
+                </div>
+                <div class="vote-input">
+                    <label>Votes:</label>
+                    <input type="number" 
+                           id="votes4" 
+                           class="vote-count-input" 
+                           min="1" 
+                           value="1"
+                           disabled
+                           onchange="updateTotal(4)"
+                           onclick="event.stopPropagation()">
+                </div>
+                <p class="vote-price">Total: ₦<span id="total4">50</span></p>
+            </label>
+        </div>
+
+        <button class="vote-button" onclick="processVote()">Vote Now</button>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script>
+        function updateTotal(contestantId) {
+            const votes = document.getElementById(`votes${contestantId}`).value;
+            const total = votes * 50;
+            document.getElementById(`total${contestantId}`).textContent = total;
+        }
+
+        // Handle card selection and styling
+        document.querySelectorAll('.contestant-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.contestant-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Disable all vote inputs first
+                document.querySelectorAll('.vote-count-input').forEach(input => {
+                    input.disabled = true;
+                });
+                
+                // Enable clicked card's vote input
+                const contestantNumber = this.querySelector('input[type="radio"]').value;
+                const voteInput = document.getElementById(`votes${contestantNumber}`);
+                voteInput.disabled = false;
+                updateTotal(contestantNumber);
+            });
+        });
+
+        function processVote() {
+            const selectedContestant = document.querySelector('input[name="contestant"]:checked');
+            
+            if (!selectedContestant) {
+                alert('Please select a contestant first!');
+                return;
+            }
+
+            const contestantId = selectedContestant.value;
+            const numberOfVotes = document.getElementById(`votes${contestantId}`).value;
+
+            if (numberOfVotes < 1) {
+                alert('Please enter at least 1 vote');
+                return;
+            }
+
+            const email = prompt("Please enter your email address:");
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            const amount = numberOfVotes * 50 * 100; // ₦50 per vote in kobo
+
+            let handler = PaystackPop.setup({
+                key: 'pk_test_74172d5bbd576149ed2c4394a49d5f815951bbed', // Replace with your public key
+                email: email,
+                amount: amount,
+                currency: 'NGN',
+                ref: 'VOTE_' + Date.now() + '_' + contestantId,
+                metadata: {
+                    custom_fields: [
+                        {
+                            contestant_id: contestantId,
+                            votes: numberOfVotes
+                        }
+                    ]
+                },
+                callback: function(response) {
+                    alert(`Thank you! You have successfully cast ${numberOfVotes} vote(s) for your chosen contestant.`);
+                },
+                onClose: function() {
+                    // Handle payment window close
+                }
+            });
+            
+            handler.openIframe();
+        }
+    </script>
+</body>
+</html>
