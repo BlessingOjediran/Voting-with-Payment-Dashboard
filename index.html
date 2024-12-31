@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Miss NUNSA Voting</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Montserrat&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Montserrat&family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>Miss NUNSA National 2025</h1>
+        <div class="header-content">
+            <h1>Miss NUNSA National 2025</h1>
+            <p>
+                Please vote for your preferred contestant and pay the required amount to cast your vote.
+            </p>
+            <a href="results.php" class="results-button">View Results</a>
+        </div>
         
         <div class="contestants-grid">
             <!-- Contestant 1 -->
@@ -17,21 +24,22 @@
                 <img src="model 2.jpg" alt="Jane Doe">
                 <input type="radio" id="contestant1" name="contestant" value="1">
                 <div class="contestant-info">
-                    <span class="contestant-name">Jane Doe</span>
+                    <div class="contestant-name">
+                        <a href="https://nunsa.org.ng/wp-content/uploads/2024/12/Lola-Dennis-University-of-Ibadan.pdf" 
+                           data-lightbox="contestant-pdf" 
+                           data-title="Contestant Profile">
+                            Jane Doe
+                        </a>
+                    </div>
                     <p>22, University of Ibadan</p>
                 </div>
-                <div class="vote-input">
-                    <label>Votes:</label>
-                    <input type="number" 
-                           id="votes1" 
-                           class="vote-count-input" 
-                           min="1" 
-                           value="1"
-                           disabled
-                           onchange="updateTotal(1)"
-                           onclick="event.stopPropagation()">
+                <div class="vote-stepper">
+                    <button class="stepper-btn minus" onclick="updateVotes(1, -1); event.stopPropagation()">-</button>
+                    <span id="votes1" class="vote-count">1</span>
+                    <button class="stepper-btn plus" onclick="updateVotes(1, 1); event.stopPropagation()">+</button>
                 </div>
                 <p class="vote-price">Total: ₦<span id="total1">50</span></p>
+                <button class="vote-button" onclick="processVote(1)">Vote Now</button>
             </label>
 
             <!-- Contestant 2 -->
@@ -39,21 +47,22 @@
                 <img src="model 2.jpg" alt="Mary Smith">
                 <input type="radio" id="contestant2" name="contestant" value="2">
                 <div class="contestant-info">
-                    <span class="contestant-name">Mary Smith</span>
+                    <div class="contestant-name">
+                        <a href="https://nunsa.org.ng/wp-content/uploads/2024/12/Lola-Dennis-University-of-Ibadan.pdf" 
+                           data-lightbox="contestant-pdf" 
+                           data-title="Contestant Profile">
+                            Mary Smith
+                        </a>
+                    </div>
                     <p>22, University of Ibadan</p>
                 </div>
-                <div class="vote-input">
-                    <label>Votes:</label>
-                    <input type="number" 
-                           id="votes2" 
-                           class="vote-count-input" 
-                           min="1" 
-                           value="1"
-                           disabled
-                           onchange="updateTotal(2)"
-                           onclick="event.stopPropagation()">
+                <div class="vote-stepper">
+                    <button class="stepper-btn minus" onclick="updateVotes(2, -1); event.stopPropagation()">-</button>
+                    <span id="votes2" class="vote-count">1</span>
+                    <button class="stepper-btn plus" onclick="updateVotes(2, 1); event.stopPropagation()">+</button>
                 </div>
                 <p class="vote-price">Total: ₦<span id="total2">50</span></p>
+                <button class="vote-button" onclick="processVote(2)">Vote Now</button>
             </label>
 
             <!-- Contestant 3 -->
@@ -61,21 +70,22 @@
                 <img src="model 2.jpg" alt="Sarah Johnson">
                 <input type="radio" id="contestant3" name="contestant" value="3">
                 <div class="contestant-info">
-                    <span class="contestant-name">Sarah Johnson</span>
+                    <div class="contestant-name">
+                        <a href="https://nunsa.org.ng/wp-content/uploads/2024/12/Lola-Dennis-University-of-Ibadan.pdf" 
+                           data-lightbox="contestant-pdf" 
+                           data-title="Contestant Profile">
+                            Sarah Johnson
+                        </a>
+                    </div>
                     <p>22, University of Ibadan</p>
                 </div>
-                <div class="vote-input">
-                    <label>Votes:</label>
-                    <input type="number" 
-                           id="votes3" 
-                           class="vote-count-input" 
-                           min="1" 
-                           value="1"
-                           disabled
-                           onchange="updateTotal(3)"
-                           onclick="event.stopPropagation()">
+                <div class="vote-stepper">
+                    <button class="stepper-btn minus" onclick="updateVotes(3, -1); event.stopPropagation()">-</button>
+                    <span id="votes3" class="vote-count">1</span>
+                    <button class="stepper-btn plus" onclick="updateVotes(3, 1); event.stopPropagation()">+</button>
                 </div>
                 <p class="vote-price">Total: ₦<span id="total3">50</span></p>
+                <button class="vote-button" onclick="processVote(3)">Vote Now</button>
             </label>
 
             <!-- Contestant 4 -->
@@ -83,69 +93,54 @@
                 <img src="model 2.jpg" alt="Alice Brown">
                 <input type="radio" id="contestant4" name="contestant" value="4">
                 <div class="contestant-info">
-                    <span class="contestant-name">Alice Brown</span>
+                    <div class="contestant-name">
+                        <a href="https://nunsa.org.ng/wp-content/uploads/2024/12/Lola-Dennis-University-of-Ibadan.pdf" 
+                           data-lightbox="contestant-pdf" 
+                           data-title="Contestant Profile">
+                            Alice Brown
+                        </a>
+                    </div>
                     <p>22, University of Ibadan</p>
                 </div>
-                <div class="vote-input">
-                    <label>Votes:</label>
-                    <input type="number" 
-                           id="votes4" 
-                           class="vote-count-input" 
-                           min="1" 
-                           value="1"
-                           disabled
-                           onchange="updateTotal(4)"
-                           onclick="event.stopPropagation()">
+                <div class="vote-stepper">
+                    <button class="stepper-btn minus" onclick="updateVotes(4, -1); event.stopPropagation()">-</button>
+                    <span id="votes4" class="vote-count">1</span>
+                    <button class="stepper-btn plus" onclick="updateVotes(4, 1); event.stopPropagation()">+</button>
                 </div>
                 <p class="vote-price">Total: ₦<span id="total4">50</span></p>
+                <button class="vote-button" onclick="processVote(4)">Vote Now</button>
             </label>
         </div>
-
-        <button class="vote-button" onclick="processVote()">Vote Now</button>
     </div>
 
     <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
     <script>
-        function updateTotal(contestantId) {
-            const votes = document.getElementById(`votes${contestantId}`).value;
-            const total = votes * 50;
-            document.getElementById(`total${contestantId}`).textContent = total;
+        function updateVotes(contestantId, change) {
+            const votesElement = document.getElementById(`votes${contestantId}`);
+            let currentVotes = parseInt(votesElement.textContent);
+            
+            // Ensure votes don't go below 1
+            if (currentVotes + change >= 1) {
+                currentVotes += change;
+                votesElement.textContent = currentVotes;
+                
+                // Update the total price
+                const total = currentVotes * 50;
+                document.getElementById(`total${contestantId}`).textContent = total;
+            }
         }
 
-        // Handle card selection and styling
         document.querySelectorAll('.contestant-card').forEach(card => {
-            card.addEventListener('click', function() {
-                // Remove selected class from all cards
-                document.querySelectorAll('.contestant-card').forEach(c => {
-                    c.classList.remove('selected');
-                });
-                
-                // Add selected class to clicked card
-                this.classList.add('selected');
-                
-                // Disable all vote inputs first
-                document.querySelectorAll('.vote-count-input').forEach(input => {
-                    input.disabled = true;
-                });
-                
-                // Enable clicked card's vote input
-                const contestantNumber = this.querySelector('input[type="radio"]').value;
-                const voteInput = document.getElementById(`votes${contestantNumber}`);
-                voteInput.disabled = false;
-                updateTotal(contestantNumber);
+            card.addEventListener('click', function(e) {
+                // Prevent the default radio button behavior
+                e.preventDefault();
             });
         });
 
-        function processVote() {
-            const selectedContestant = document.querySelector('input[name="contestant"]:checked');
-            
-            if (!selectedContestant) {
-                alert('Please select a contestant first!');
-                return;
-            }
-
-            const contestantId = selectedContestant.value;
-            const numberOfVotes = document.getElementById(`votes${contestantId}`).value;
+        function processVote(contestantId) {
+            const numberOfVotes = parseInt(document.getElementById(`votes${contestantId}`).textContent);
 
             if (numberOfVotes < 1) {
                 alert('Please enter at least 1 vote');
@@ -161,7 +156,7 @@
             const amount = numberOfVotes * 50 * 100; // ₦50 per vote in kobo
 
             let handler = PaystackPop.setup({
-                key: 'pk_test_74172d5bbd576149ed2c4394a49d5f815951bbed', // Replace with your public key
+                key: 'pk_test_74172d5bbd576149ed2c4394a49d5f815951bbed',
                 email: email,
                 amount: amount,
                 currency: 'NGN',
