@@ -277,6 +277,10 @@ canvas {
     font-weight: bold;
 }
 
+.hide {
+    display: none;
+}
+
 
 @media (max-width: 768px) {
     body {
