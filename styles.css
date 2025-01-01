@@ -282,8 +282,8 @@ canvas {
     }
 
 
-    .canvas {
-        height: 80vh !important;
+    canvas {
+        height: 60vh !important;
     }
 }
 
