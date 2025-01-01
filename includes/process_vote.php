@@ -43,11 +43,29 @@ if (!$verification || !$verification['status'] || $verification['data']['status'
 }
 
 try {
-    // Insert vote record
-    $stmt = $conn->prepare("INSERT INTO votes (contestant_id, email, num_votes, amount, payment_reference) VALUES (?, ?, ?, ?, ?)");
+    // Insert vote record with additional fields
+    $stmt = $conn->prepare("INSERT INTO votes (
+        contestant_id, 
+        contestant_name,
+        email, 
+        num_votes, 
+        amount, 
+        payment_reference
+    ) VALUES (?, ?, ?, ?, ?, ?)");
+    
     $email = $verification['data']['customer']['email'];
     $amount = $verification['data']['amount'] / 100; // Convert from kobo to naira
-    $stmt->bind_param("isids", $contestant_id, $email, $num_votes, $amount, $reference);
+    $contestant_name = $_POST['contestant_name'] ?? '';
+    
+    $stmt->bind_param(
+        "sssids", 
+        $contestant_id, 
+        $contestant_name,
+        $email, 
+        $num_votes, 
+        $amount, 
+        $reference
+    );
     
     if ($stmt->execute()) {
         echo json_encode(['success' => true, 'message' => 'Vote recorded successfully']);

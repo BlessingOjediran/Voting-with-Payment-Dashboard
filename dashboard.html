@@ -1,120 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miss NUNSA Voting Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Voting Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Montserrat&family=Dancing+Script&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div class="container">
-        <div class="dashboard-header">
-            <h1>Miss NUNSA Voting Dashboard</h1>
-            <p>Live voting results and statistics</p>
+        <div class="header-content">
+            <h1>Voting Results Dashboard</h1>
+            <p class="subtitle">
+                Track voting progress and results in real-time
+            </p>
+            <a href="index.html" class="results-button">Back to Voting</a>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Votes</h3>
-                <div class="number" id="totalVotes">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Total Amount Raised</h3>
-                <div class="number" id="totalAmount">₦0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Number of Voters</h3>
-                <div class="number" id="totalVoters">0</div>
-            </div>
-        </div>
+    </div>
 
+    <!-- Summary Statistics -->
+    <div class="row stats-row">
+        <div class="stats-card">
+            <h4>Total Votes</h4>
+            <h2 id="totalVotes">0</h2>
+        </div>
+        <div class="stats-card">
+            <h4>Total Amount</h4>
+            <h2 id="totalAmount">₦0</h2>
+        </div>
+        <div class="stats-card">
+            <h4>Total Voters</h4>
+            <h2 id="totalVoters">0</h2>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row charts-row">
         <div class="chart-container">
-            <canvas id="votingChart"></canvas>
+            <canvas id="votesChart"></canvas>
         </div>
+        <div class="chart-container">
+            <canvas id="timelineChart"></canvas>
+        </div>
+    </div>
 
-        <table class="results-table">
+    <!-- Recent Votes Table -->
+    <h3>Recent Votes</h3>
+    <div class="table-container">
+        <table>
             <thead>
                 <tr>
                     <th>Contestant</th>
                     <th>Votes</th>
-                    <th>Percentage</th>
-                    <th>Amount Raised</th>
+                    <th>Amount</th>
+                    <th>Time</th>
                 </tr>
             </thead>
-            <tbody id="resultsTableBody">
-                <!-- Table rows will be populated by JavaScript -->
+            <tbody id="recentVotes">
             </tbody>
         </table>
     </div>
+    </div>
 
     <script>
-        // Function to fetch and update dashboard data
-        async function updateDashboard() {
-            try {
-                const response = await fetch('includes/get_voting_data.php');
-                const data = await response.json();
-                
-                // Update statistics
-                document.getElementById('totalVotes').textContent = data.totalVotes;
-                document.getElementById('totalAmount').textContent = `₦${data.totalAmount}`;
-                document.getElementById('totalVoters').textContent = data.totalVoters;
+        // Initialize charts
+        const votesCtx = document.getElementById('votesChart').getContext('2d');
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
 
-                // Update chart
-                votingChart.data.labels = data.contestants.map(contestant => contestant.name);
-                votingChart.data.datasets[0].data = data.contestants.map(contestant => contestant.votes);
-                votingChart.update();
-
-                // Update results table
-                const tableBody = document.getElementById('resultsTableBody');
-                tableBody.innerHTML = ''; // Clear existing rows
-                
-                data.contestants.forEach(contestant => {
-                    const percentage = ((contestant.votes / data.totalVotes) * 100).toFixed(1);
-                    const row = `
-                        <tr>
-                            <td>${contestant.name}</td>
-                            <td>${contestant.votes}</td>
-                            <td>${percentage}%</td>
-                            <td>₦${contestant.amount}</td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
-            } catch (error) {
-                console.error('Error fetching dashboard data:', error);
-            }
-        }
-
-        // Initialize chart
-        const ctx = document.getElementById('votingChart').getContext('2d');
-        const votingChart = new Chart(ctx, {
+        const votesChart = new Chart(votesCtx, {
             type: 'bar',
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'Number of Votes',
+                    label: 'Votes per Contestant',
                     data: [],
-                    backgroundColor: '#00a81780',
-                    borderColor: '#00a817',
-                    borderWidth: 1
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)'
                 }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
             }
         });
 
-        // Initial load
-        updateDashboard();
+        const timelineChart = new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Votes Timeline',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)'
+                }]
+            }
+        });
 
-        // Refresh every 5 minutes
-        setInterval(updateDashboard, 5 * 60 * 1000);
+        // Function to fetch and update dashboard data
+        function updateDashboard() {
+            fetch('includes/get_dashboard_data.php')
+                .then(response => response.json())
+                .then(data => {
+                    // Update summary statistics
+                    document.getElementById('totalVotes').textContent = data.totalVotes;
+                    document.getElementById('totalAmount').textContent = '₦' + data.totalAmount.toLocaleString();
+                    document.getElementById('totalVoters').textContent = data.uniqueVoters;
+
+                    // Update votes chart
+                    votesChart.data.labels = data.contestantStats.map(item => item.contestant_name);
+                    votesChart.data.datasets[0].data = data.contestantStats.map(item => item.total_votes);
+                    votesChart.update();
+
+                    // Update timeline chart
+                    timelineChart.data.labels = data.timeline.map(item => item.date);
+                    timelineChart.data.datasets[0].data = data.timeline.map(item => item.votes);
+                    timelineChart.update();
+
+                    // Update recent votes table
+                    const recentVotesHtml = data.recentVotes.map(vote => `
+                        <tr>
+                            <td>${vote.contestant_name}</td>
+                            <td>${vote.num_votes}</td>
+                            <td>₦${vote.amount}</td>
+                            <td>${vote.vote_date}</td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('recentVotes').innerHTML = recentVotesHtml;
+                });
+        }
+
+        // Update dashboard every 30 seconds
+        updateDashboard();
+        setInterval(updateDashboard, 30000);
     </script>
 </body>
+
 </html>

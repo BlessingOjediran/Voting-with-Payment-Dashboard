@@ -12,10 +12,10 @@
     <div class="container">
         <div class="header-content">
             <h1>Miss NUNSA National 2025</h1>
-            <p>
+            <p class="subtitle">
                 Please vote for your preferred contestant and pay the required amount to cast your vote.
             </p>
-            <a href="results.php" class="results-button">View Results</a>
+            <a href="dashboard.html" class="results-button">View Results</a>
         </div>
         
         <div class="contestants-grid">
@@ -114,8 +114,6 @@
     </div>
 
     <script src="https://js.paystack.co/v1/inline.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
     <script>
         function updateVotes(contestantId, change) {
             const votesElement = document.getElementById(`votes${contestantId}`);
@@ -153,6 +151,10 @@
                 return;
             }
 
+            // Get contestant name
+            const contestantName = document.querySelector(`#contestant${contestantId}`).closest('.contestant-card')
+                .querySelector('.contestant-name a').textContent.trim();
+
             const amount = numberOfVotes * 50 * 100; // ₦50 per vote in kobo
 
             let handler = PaystackPop.setup({
@@ -165,23 +167,45 @@
                     custom_fields: [
                         {
                             contestant_id: contestantId,
-                            votes: numberOfVotes
+                            contestant_name: contestantName,
+                            votes: numberOfVotes,
+                            email: email
                         }
                     ]
                 },
                 callback: function(response) {
-                    // Send vote data to server
-                    fetch('includes/process_vote.php', {
+                    // Send vote and payment data to server
+                    const formData = new FormData();
+                    formData.append('reference', response.reference);
+                    formData.append('contestant_id', contestantId);
+                    formData.append('contestant_name', contestantName);
+                    formData.append('votes', numberOfVotes);
+                    formData.append('email', email);
+                    formData.append('amount', amount/100); // Convert back to Naira
+
+                    fetch('https://api.apico.dev/v1/hawAZF/1WTiyw-vWcJ105Og4U45IKRcqewLymV008R_Yf7SO214/values/Sheet1:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&includeValuesInResponse=true', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Content-Type': 'application/json',
                         },
-                        body: `reference=${response.reference}&contestant_id=${contestantId}&votes=${numberOfVotes}`
+                        body: JSON.stringify({
+                            "values": [
+                                [
+                                    new Date().toISOString().replace('T', ' ').slice(0, 19), // Format: YYYY-MM-DD HH:MM:SS
+                                    contestantName,
+                                    numberOfVotes,
+                                    amount/100,
+                                    email,
+                                    response.reference
+                                ]
+                            ]
+                        })
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success) {
-                            alert(`Thank you! You have successfully cast ${numberOfVotes} vote(s) for your chosen contestant.`);
+                        if (data.updates) {
+                            alert(`Thank you! You have successfully cast ${numberOfVotes} vote(s) for ${contestantName}.`);
+                            window.location.reload();
                         } else {
                             alert('There was an error recording your vote. Please contact support.');
                         }
@@ -193,6 +217,7 @@
                 },
                 onClose: function() {
                     // Handle payment window close
+                    alert('Transaction cancelled');
                 }
             });
             
