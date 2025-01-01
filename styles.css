@@ -6,7 +6,7 @@
 
 /* Base font size */
 html {
-    font-size: 16px;
+    font-size: 14px;
     /* Base size */
 }
 
@@ -43,6 +43,7 @@ h1 {
 }
 
 h3 {
+    font-size: 2.5rem;
     color: #ffffff;
     margin-bottom: 20px;
 }
@@ -104,7 +105,7 @@ p {
 
 .contestant-name {
     font-family: "Dancing Script";
-    font-size: 2.25rem;
+    font-size: 2.3rem;
     font-weight: bold;
     color: #333333;
 }
@@ -205,11 +206,11 @@ p {
     flex-wrap: wrap;
     gap: 20px;
     align-items: center;
-    justify-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .stat-card {
-    flex: 1;
     min-width: 144px;
     padding: 20px;
     border: 1px solid #ddd;
