@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voting Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Montserrat&family=Dancing+Script&display=swap"
@@ -19,7 +20,6 @@
                 Track voting progress and results in real-time
             </p>
             <a href="index.html" class="results-button">Back to Voting</a>
-
         </div>
 
         <div class="chart-container">
@@ -36,13 +36,12 @@
                 </div>
                 <div class="stat-card">
                     <h3>Amount Raised</h3>
-                    <div class="number" id="totalAmount">₦0</div>
+                    <div class="number" id="totalAmount">₦ 0</div>
                 </div>
             </div>
-
-            <canvas id="voteChart"></canvas>
+            <canvas id="voteChartFemale"></canvas>
         </div>
-    </div>
+    
 
     <script>
         // Function to fetch and process data from Google Sheets
@@ -85,7 +84,7 @@
                 });
 
                 // Create/Update chart
-                const ctx = document.getElementById('voteChart').getContext('2d');
+                const ctx = document.getElementById('voteChartFemale').getContext('2d');
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
