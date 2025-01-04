@@ -205,7 +205,8 @@
                     .then(data => {
                         if (data.updates) {
                             alert(`Thank you! You have successfully cast ${numberOfVotes} vote(s) for ${contestantName}.`);
-                            window.location.reload();
+                            // Redirect to dashboard after successful payment
+                            window.location.href = 'dashboard.html';
                         } else {
                             alert('There was an error recording your vote. Please contact support.');
                         }
