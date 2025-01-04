@@ -41,113 +41,223 @@
             </div>
             <canvas id="voteChartFemale"></canvas>
         </div>
-    
 
-    <script>
-        // Function to fetch and process data from Google Sheets
-        async function fetchVoteData() {
-            try {
-                const response = await fetch('https://api.apico.dev/v1/hawAZF/1WTiyw-vWcJ105Og4U45IKRcqewLymV008R_Yf7SO214/values/Sheet1?majorDimension=ROWS');
-                const data = await response.json();
+        <!-- Add new chart container for male category -->
+        <div class="chart-container" id="male-chart">
+            <h2>Mr NUNSA National</h2>
+            <!-- Added stat cards for male category -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Votes</h3>
+                    <div class="number blue" id="totalVotesMale">0</div>
+                </div>
+                <div class="stat-card hide">
+                    <h3>Amount Raised</h3>
+                    <div class="number blue" id="totalAmountMale">₦ 0</div>
+                </div>
+                <div class="stat-card hide-on-mobile">
+                    <h3>Unique Voters</h3>
+                    <div class="number blue" id="uniqueVotersMale">0</div>
+                </div>
+            </div>
+            <canvas id="voteChartMale"></canvas>
+        </div>
 
-                // Skip header row and process data
-                const rows = data.values.slice(1);
+        <script>
+            // Function to fetch and process data from Google Sheets
+            async function fetchVoteData() {
+                try {
+                    // Fetch both female and male data
+                    const [femaleResponse, maleResponse] = await Promise.all([
+                        fetch('https://api.apico.dev/v1/hawAZF/1WTiyw-vWcJ105Og4U45IKRcqewLymV008R_Yf7SO214/values/Sheet1?majorDimension=ROWS'),
+                        fetch('https://api.apico.dev/v1/hawAZF/1WTiyw-vWcJ105Og4U45IKRcqewLymV008R_Yf7SO214/values/Sheet2?majorDimension=ROWS')
+                    ]);
 
-                // Initialize statistics
-                const voteCounts = {};
-                let totalVotes = 0;
-                let totalAmount = 0;
-                const uniqueEmails = new Set();
+                    const femaleData = await femaleResponse.json();
+                    const maleData = await maleResponse.json();
 
-                // Process each row
-                rows.forEach(row => {
-                    const contestantName = row[1];  // Column B: Contestant name
-                    const votes = parseInt(row[2]);  // Column C: Votes
-                    const amount = parseFloat(row[3]); // Column D: Amount
-                    const email = row[4];  // Column E: Email
+                    // Skip header row and process data
+                    const rows = femaleData.values.slice(1);
 
-                    // Update vote counts
-                    voteCounts[contestantName] = (voteCounts[contestantName] || 0) + votes;
+                    // Initialize statistics
+                    const voteCounts = {};
+                    let totalVotes = 0;
+                    let totalAmount = 0;
+                    const uniqueEmails = new Set();
 
-                    // Update statistics
-                    totalVotes += votes;
-                    totalAmount += amount;
-                    if (email) uniqueEmails.add(email);
-                });
+                    // Process each row
+                    rows.forEach(row => {
+                        const contestantName = row[1];  // Column B: Contestant name
+                        const votes = parseInt(row[2]);  // Column C: Votes
+                        const amount = parseFloat(row[3]); // Column D: Amount
+                        const email = row[4];  // Column E: Email
 
-                // Update statistics display
-                document.getElementById('totalVotes').textContent = totalVotes.toLocaleString();
-                document.getElementById('uniqueVoters').textContent = uniqueEmails.size.toLocaleString();
-                document.getElementById('totalAmount').textContent = '₦ ' + totalAmount.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
+                        // Update vote counts
+                        voteCounts[contestantName] = (voteCounts[contestantName] || 0) + votes;
 
-                // Create/Update chart
-                const ctx = document.getElementById('voteChartFemale').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(voteCounts),
-                        datasets: [{
-                            label: 'Total Votes',
-                            data: Object.values(voteCounts),
-                            backgroundColor: 'rgba(0, 168, 23, 0.8)',
-                            borderColor: 'rgba(0, 168, 23, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 200,
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    font: {
-                                        size: 12
-                                    },
-                                    callback: function(value, index) {
-                                        const votes = this.chart.data.datasets[0].data[index];
-                                        return [this.chart.data.labels[index], votes.toLocaleString()];
-                                    }
-                                }
-                            }
+                        // Update statistics
+                        totalVotes += votes;
+                        totalAmount += amount;
+                        if (email) uniqueEmails.add(email);
+                    });
+
+                    // Update statistics display
+                    document.getElementById('totalVotes').textContent = totalVotes.toLocaleString();
+                    document.getElementById('uniqueVoters').textContent = uniqueEmails.size.toLocaleString();
+                    document.getElementById('totalAmount').textContent = '₦ ' + totalAmount.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+
+                    // Create/Update chart
+                    const ctx = document.getElementById('voteChartFemale').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(voteCounts),
+                            datasets: [{
+                                label: 'Total Votes',
+                                data: Object.values(voteCounts),
+                                backgroundColor: 'rgba(0, 168, 23, 0.8)',
+                                borderColor: 'rgba(0, 168, 23, 1)',
+                                borderWidth: 1
+                            }]
                         },
-                        plugins: {
-                            legend: {
-                                display: false
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 200,
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        font: {
+                                            size: 12
+                                        },
+                                        callback: function(value, index) {
+                                            const votes = this.chart.data.datasets[0].data[index];
+                                            return [this.chart.data.labels[index], votes.toLocaleString()];
+                                        }
+                                    }
+                                }
                             },
-                            title: {
-                                display: true,
-                                text: 'Automatically updates every 30 seconds',
-                                font: {
-                                    size: 14,
-                                    weight: 'regular'
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Automatically updates every 30 seconds',
+                                    font: {
+                                        size: 14,
+                                        weight: 'regular'
+                                    }
                                 }
                             }
                         }
-                    }
-                });
-            } catch (error) {
-                console.error('Error fetching data:', error);
+                    });
+
+                    // Process male data
+                    const maleRows = maleData.values.slice(1);
+                    const maleVoteCounts = {};
+                    let maleTotalVotes = 0;
+                    let maleTotalAmount = 0;
+                    const maleUniqueEmails = new Set();
+
+                    // Process each male row
+                    maleRows.forEach(row => {
+                        const contestantName = row[1];
+                        const votes = parseInt(row[2]);
+                        const amount = parseFloat(row[3]);
+                        const email = row[4];
+
+                        maleVoteCounts[contestantName] = (maleVoteCounts[contestantName] || 0) + votes;
+                        maleTotalVotes += votes;
+                        maleTotalAmount += amount;
+                        if (email) maleUniqueEmails.add(email);
+                    });
+
+                    // Update male statistics display
+                    document.getElementById('totalVotesMale').textContent = maleTotalVotes.toLocaleString();
+                    document.getElementById('uniqueVotersMale').textContent = maleUniqueEmails.size.toLocaleString();
+                    document.getElementById('totalAmountMale').textContent = '₦ ' + maleTotalAmount.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+
+                    // Create/Update male chart
+                    const maleCtx = document.getElementById('voteChartMale').getContext('2d');
+                    new Chart(maleCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(maleVoteCounts),
+                            datasets: [{
+                                label: 'Total Votes',
+                                data: Object.values(maleVoteCounts),
+                                backgroundColor: 'rgba(0, 123, 255, 0.8)',
+                                borderColor: 'rgba(0, 123, 255, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 200,
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        font: {
+                                            size: 12
+                                        },
+                                        callback: function(value, index) {
+                                            const votes = this.chart.data.datasets[0].data[index];
+                                            return [this.chart.data.labels[index], votes.toLocaleString()];
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Automatically updates every 30 seconds',
+                                    font: {
+                                        size: 14,
+                                        weight: 'regular'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
             }
-        }
 
-        // Load data when page loads
-        fetchVoteData();
+            // Load data when page loads
+            fetchVoteData();
 
-        // Update every 30 seconds
-        setInterval(fetchVoteData, 30000);
-    </script>
+            // Update every 30 seconds
+            setInterval(fetchVoteData, 30000);
+        </script>
+    </div>
 </body>
 
 </html>

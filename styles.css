@@ -336,3 +336,7 @@ canvas {
         margin-bottom: 12px;
     }
 }
+
+.number.blue {
+    color: rgba(0, 123, 255, 0.8);
+}

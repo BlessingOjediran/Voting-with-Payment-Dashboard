@@ -111,6 +111,87 @@
                 <button class="vote-button" onclick="processVote(4)">Vote Now</button>
             </label>
         </div>
+
+        <div class="header-content">
+            <h1>Mr NUNSA National 2025</h1>
+            <p class="subtitle">
+                Please vote for your preferred contestant and pay the required amount to cast your vote.
+            </p>
+            <a href="dashboard.html#male-chart" class="results-button">View Results</a>
+        </div>
+        
+        <div class="contestants-grid">
+            <!-- Male Contestant 1 -->
+            <label class="contestant-card" for="male-contestant1">
+                <img src="male model 2.jpg" alt="John Doe">
+                <input type="radio" id="male-contestant1" name="male-contestant" value="1">
+                <div class="contestant-info">
+                    <div class="contestant-name">
+                        <a href="https://nunsa.org.ng/wp-content/uploads/2024/12/male-contestant1.pdf" 
+                           data-lightbox="contestant-pdf" 
+                           data-title="Contestant Profile">
+                            John Doe
+                        </a>
+                    </div>
+                    <p>23, University of Lagos</p>
+                </div>
+                <div class="vote-stepper">
+                    <button class="stepper-btn minus" onclick="updateMaleVotes(1, -1); event.stopPropagation()">-</button>
+                    <span id="male-votes1" class="vote-count">1</span>
+                    <button class="stepper-btn plus" onclick="updateMaleVotes(1, 1); event.stopPropagation()">+</button>
+                </div>
+                <p class="vote-price">Total: ₦<span id="male-total1">50</span></p>
+                <button class="vote-button" onclick="processMaleVote(1)">Vote Now</button>
+            </label>
+
+            <!-- Contestant 2 -->
+            <label class="contestant-card" for="contestant2">
+                <img src="male model 2.jpg" alt="John Doe">
+                <input type="radio" id="contestant2" name="contestant" value="2">
+                <div class="contestant-info">
+                    <div class="contestant-name">
+                        <a href="https://nunsa.org.ng/wp-content/uploads/2024/12/Lola-Dennis-University-of-Ibadan.pdf" 
+                           data-lightbox="contestant-pdf" 
+                           data-title="Contestant Profile">
+                            John Doe
+                        </a>
+                    </div>
+                    <p>22, University of Ibadan</p>
+                </div>
+                <div class="vote-stepper">
+                    <button class="stepper-btn minus" onclick="updateVotes(2, -1); event.stopPropagation()">-</button>
+                    <span id="votes2" class="vote-count">1</span>
+                    <button class="stepper-btn plus" onclick="updateVotes(2, 1); event.stopPropagation()">+</button>
+                </div>
+                <p class="vote-price">Total: ₦<span id="total2">50</span></p>
+                <button class="vote-button" onclick="processVote(2)">Vote Now</button>
+            </label>
+
+            <!-- Contestant 3 -->
+            <label class="contestant-card" for="contestant3">
+                <img src="male model 2.jpg" alt="John Doe">
+                <input type="radio" id="contestant3" name="contestant" value="3">
+                <div class="contestant-info">
+                    <div class="contestant-name">
+                        <a href="https://nunsa.org.ng/wp-content/uploads/2024/12/Lola-Dennis-University-of-Ibadan.pdf" 
+                           data-lightbox="contestant-pdf" 
+                           data-title="Contestant Profile">
+                            John Doe
+                        </a>
+                    </div>
+                    <p>22, University of Ibadan</p>
+                </div>
+                <div class="vote-stepper">
+                    <button class="stepper-btn minus" onclick="updateVotes(3, -1); event.stopPropagation()">-</button>
+                    <span id="votes3" class="vote-count">1</span>
+                    <button class="stepper-btn plus" onclick="updateVotes(3, 1); event.stopPropagation()">+</button>
+                </div>
+                <p class="vote-price">Total: ₦<span id="total3">50</span></p>
+                <button class="vote-button" onclick="processVote(3)">Vote Now</button>
+            </label>
+
+        </div>
+
     </div>
 
     <script src="https://js.paystack.co/v1/inline.js"></script>
@@ -206,6 +287,104 @@
                         if (data.updates) {
                             alert(`Thank you! You have successfully cast ${numberOfVotes} vote(s) for ${contestantName}.`);
                             // Redirect to dashboard after successful payment
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            alert('There was an error recording your vote. Please contact support.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while recording your vote');
+                    });
+                },
+                onClose: function() {
+                    // Handle payment window close
+                    alert('Transaction cancelled');
+                }
+            });
+            
+            handler.openIframe();
+        }
+
+        function updateMaleVotes(contestantId, change) {
+            const votesElement = document.getElementById(`male-votes${contestantId}`);
+            let currentVotes = parseInt(votesElement.textContent);
+            
+            if (currentVotes + change >= 1) {
+                currentVotes += change;
+                votesElement.textContent = currentVotes;
+                
+                const total = currentVotes * 50;
+                document.getElementById(`male-total${contestantId}`).textContent = total;
+            }
+        }
+
+        function processMaleVote(contestantId) {
+            const numberOfVotes = parseInt(document.getElementById(`male-votes${contestantId}`).textContent);
+
+            if (numberOfVotes < 1) {
+                alert('Please enter at least 1 vote');
+                return;
+            }
+
+            const email = prompt("Please enter your email address:");
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            const contestantName = document.querySelector(`#male-contestant${contestantId}`).closest('.contestant-card')
+                .querySelector('.contestant-name a').textContent.trim();
+
+            const amount = numberOfVotes * 50 * 100;
+
+            let handler = PaystackPop.setup({
+                key: 'pk_test_74172d5bbd576149ed2c4394a49d5f815951bbed',
+                email: email,
+                amount: amount,
+                currency: 'NGN',
+                ref: 'VOTE_' + Date.now() + '_' + contestantId,
+                metadata: {
+                    custom_fields: [
+                        {
+                            contestant_id: contestantId,
+                            contestant_name: contestantName,
+                            votes: numberOfVotes,
+                            email: email
+                        }
+                    ]
+                },
+                callback: function(response) {
+                    const formData = new FormData();
+                    formData.append('reference', response.reference);
+                    formData.append('contestant_id', contestantId);
+                    formData.append('contestant_name', contestantName);
+                    formData.append('votes', numberOfVotes);
+                    formData.append('email', email);
+                    formData.append('amount', amount/100);
+
+                    fetch('https://api.apico.dev/v1/hawAZF/1WTiyw-vWcJ105Og4U45IKRcqewLymV008R_Yf7SO214/values/Sheet2:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&includeValuesInResponse=true', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            "values": [
+                                [
+                                    new Date().toISOString().replace('T', ' ').slice(0, 19),
+                                    contestantName,
+                                    numberOfVotes,
+                                    amount/100,
+                                    email,
+                                    response.reference
+                                ]
+                            ]
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.updates) {
+                            alert(`Thank you! You have successfully cast ${numberOfVotes} vote(s) for ${contestantName}.`);
                             window.location.href = 'dashboard.html';
                         } else {
                             alert('There was an error recording your vote. Please contact support.');
